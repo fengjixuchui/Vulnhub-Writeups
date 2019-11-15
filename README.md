@@ -11,3 +11,7 @@ ID | Machine | Download
 0x04 | Misdirection: 1 | [Download Writeup](#)
 0x05 | The Library: 1 | [Download Writeup](#)
 0x06 | The Library: 2 | [Download Writeup](#)
+0x07 | symfonos: 1 | [Coming Soon](#)
+0x08 | symfonos: 2 | [Coming Soon](#)
+0x09 | symfonos: 3 | [Coming Soon](#)
+0x010 | symfonos: 4 | [Coming Soon](#)
