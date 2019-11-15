@@ -1,6 +1,6 @@
 # Vulnhub Writeups By pwn4magic (.PDF Format)
 
-![vulnhub_image](https://hackt.nl/wp-content/uploads/2018/09/vulnhub-702x336.png)
+![vulnhub_image](https://miro.medium.com/max/790/1*3cWQAzxwQovMO3E6bR3xQA.png)
 
 ID | Machine | Download
 ---- | ---- | ----
