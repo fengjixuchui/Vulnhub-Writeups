@@ -9,3 +9,5 @@ ID | Machine | Download
 0x02 | Connect The Dots: 1 | [Download Writeup](#)
 0x03 | Gears of War: EP#1 | [Download Writeup](#)
 0x04 | Misdirection: 1 | [Download Writeup](#)
+0x05 | The Library: 1 | [Download Writeup](#)
+0x06 | The Library: 2 | [Download Writeup](#)
