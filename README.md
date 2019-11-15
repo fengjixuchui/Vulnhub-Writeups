@@ -16,3 +16,4 @@ ID | Machine | Download
 0x09 | symfonos: 3 | [Coming Soon](#)
 0x10 | symfonos: 4 | [Coming Soon](#)
 0x11 | Sputnik: 1 | [Download Writeup](#)
+0x12 | covfefe: 1 | [Download Writeup](#)
