@@ -133,3 +133,22 @@ The `.htpasswd` file contain our password salt, for example `admin:$apr1$rimxjkt
 # 0x02 Exploitation
 ## Login In / Command Injection
 
+FTP banner provide us a really interesting string `Security@hackNos`, let's try to use it as password on HTTP Authentication.
+
+![image](https://i.imgur.com/zIeux5N.png)
+
+We're in & we can see a ping function, we all know in CTF world ping -> CI haha. I tried some basics command injections.
+
+```
+127.0.0.1; whoami
+127.0.0.1& whoami
+127.0.0.1&& whoami
+```
+
+Nothing really work, there is a filter in the script i guess. A blacklist that blocks `&&` - `&` - `;`, we can bypass that by using `||`.
+
+```
+127.0.0.1|| whoami
+```
+
+We have command injection! `www-data`
