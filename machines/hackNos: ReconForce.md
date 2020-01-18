@@ -20,7 +20,8 @@
   * FTP Enumeration / FTP Banner Grabbing
   * Web Enumeration
   * Theory (.htaccess/.htpasswd)
-  
+* 0x02 Exploitation
+  * Login In / Command Injection
   
 # 0x00 Quick Summary
 hackNos: ReconForce was a quite easy box, took me around 1day to root it because i was using the broken version. The mistake takes place at FTP Banner, it should be `Security@hackNos` & not `Secure@hackNos`. I wasted lot of time brute forcing the HTTP Authentication, when i got the patched version i was able to root it into 10 minutes. FTP Banner provide us the HTTP Authentication password, when we login in we can see a ping function, we need to bypass it & take command injection. Then we have to do 2 privilege escalations, very easy ones.
@@ -115,3 +116,20 @@ Site doesnt have something really useful, i even tried stego on the photos. But 
 HTTP Authentication, let's see some background theory.
 
 ## Theory (.htaccess/.htpasswd)
+
+We can password protect our webpages, using the `.htaccess` & `.htpasswd`.
+Let's reverse what `hackNos: ReconForce` maker did.
+
+He created a `.htaccess` file in the folder he wants to protect -> `/5ecure`
+```
+AuthType Basic
+AuthName "Recon Security"
+AuthUserFile /some/dummy/path/.htpasswd
+Require valid-user
+```
+
+The `.htpasswd` file contain our password salt, for example `admin:$apr1$rimxjkte$UwZbBDO3ybQNtT/7BJ/Kf0`. In our case because is an easy/medium machine, username will be admin.
+
+# 0x02 Exploitation
+## Login In / Command Injection
+
