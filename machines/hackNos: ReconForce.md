@@ -10,3 +10,10 @@
 | [+] Writeup By -> | ``@pwn4magic`` - `Discord : pwn4magic#8707` |
 | [+] VM Maker -> | [@rahul_gehlaut](https://twitter.com/rahul_gehlaut?lang=el) |
 | [+] OS -> | ``GNU/Linux`` :penguin: |
+
+
+## [+] Table of contents
+* 0x00 Quick Summary
+* 0x01 Enumeration
+  * soon
+  * soon
