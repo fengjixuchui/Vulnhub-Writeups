@@ -19,6 +19,7 @@
   * nmap
   * FTP Enumeration / FTP Banner Grabbing
   * Web Enumeration
+  * Theory (.htaccess/.htpasswd)
   
   
 # 0x00 Quick Summary
@@ -101,5 +102,16 @@ thepurge [192.168.1.2] 21 (ftp) open
 
 ## Web Enumeration
 
+Site doesnt have something really useful, i even tried stego on the photos. But if we check the source code we can see an interesting path. `/5ecure`
 
+```html
+<div class="button">
+<a href="5ecure/" class="btn">TroubleShoot</a>>
+</div>
+```
 
+![httpauth](https://i.imgur.com/KvMcjF8.png)
+
+HTTP Authentication, let's see some background theory.
+
+## Theory (.htaccess/.htpasswd)
