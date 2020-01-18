@@ -1,4 +1,4 @@
-# Vulnhub | hackNos: ReconForce Writeup
+# Vulnhub | hackNos: ReconForce Writeup (in detail)
 ## [+] Machine Details
 
 | INFO | Description |
@@ -10,4 +10,3 @@
 | [+] Writeup By -> | ``@pwn4magic`` - `Discord : pwn4magic#8707` |
 | [+] VM Maker -> | [@rahul_gehlaut](https://twitter.com/rahul_gehlaut?lang=el) |
 | [+] OS -> | ``GNU/Linux`` :penguin: |
-
